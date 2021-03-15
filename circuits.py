@@ -126,14 +126,16 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             for column_number in range(self.__num_data):
                 if parity_row[column_number] ==1:
                     self.cx(self.__mx[index],self.__data[column_number])
-                    self.cz(self.__mz[index],self.__data[column_number])
+                    self.cz(self.__mz[index],self.__data[column_number]) 
 
-        self.barrier()  
+        self.barrier() 
 
         #apply final hadamards to all ancillas
         for index in range (self.__num_ancilla):
             self.h(self.__mx[index])
             self.h(self.__mz[index])
+
+        self.barrier() 
 
     def logical_measure(self):
         for index in range(self.__num_ancilla):
@@ -149,7 +151,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.measure(self.__data[index],self.__data_classical[self.__num_data - index-1])
 
     def correct_errors(self):
-        """ produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out"""
+        """ produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out."""
         transpose_parity = self._transpose_parity()
 
         qubit_data = {i: {"count":0} for i in range(self.__num_data)}
@@ -173,9 +175,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     if bit_list[bit_index] == 1:
                         self.cx(self.__mz[bit_index], self.__data[qubit])
                         single_CX_updates_list.append([qubit, bit_index])
+                        self.cz(self.__mx[bit_index], self.__data[qubit])
 
         extra_ancilla = 0   
-        #list_of_impacted_qubits = []
         for qubit in range(self.__num_data):
             bit_list = transpose_parity[qubit]
             qubit_data_item = qubit_data.get(qubit)
@@ -194,12 +196,14 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             ## need to add a ccx gate
                 self.ccx(self.__mz[first_bit], self.__mz[second_bit], self.__extra_ancilla[extra_ancilla])
                 self.cx(self.__extra_ancilla[extra_ancilla], self.__data[qubit])
+                self.cz(self.__extra_ancilla[extra_ancilla], self.__data[qubit])
                 for items in single_CX_updates_list:
                     other_impacted_qubit = items[0]
                     bit_index = items[1]
                     if first_bit == bit_index or second_bit == bit_index:
-                        # need a CX gate to reverse out changes from count 1 gates, or these will show the wrong answer.
+                        # need a CX / CZ gate to reverse out changes from count 1 gates, or these will show the wrong answer.
                         self.cx(self.__extra_ancilla[extra_ancilla], self.__data[other_impacted_qubit]) 
+                        self.cz(self.__extra_ancilla[extra_ancilla], self.__data[other_impacted_qubit]) 
                 extra_ancilla = extra_ancilla + 1
 
         for qubit in range(self.__num_data):
@@ -211,8 +215,38 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 self.ccx(self.__extra_ancilla[1], self.__extra_ancilla[2], self.__extra_ancilla[3]) 
                 #need to undo impact of all gates made earlier as odd parity by inspection of codes.
                 #maybe later could add code to check the changes made, and show they have odd parity.
-                for cx_needed in range(self.__num_data):
-                    self.cx(self.__extra_ancilla[3], self.__data[cx_needed])
+                for gate_needed in range(self.__num_data):
+                    self.cx(self.__extra_ancilla[3], self.__data[gate_needed])
+                    self.cz(self.__extra_ancilla[3], self.__data[gate_needed])
+
+        #need to reverse CCX gates
+        for qubit in range(self.__num_data):
+            qubit_data_item = qubit_data.get(qubit)
+            count = qubit_data_item.get("count")  
+            if count == 3:
+                self.ccx(self.__extra_ancilla[0], self.__extra_ancilla[1], self.__extra_ancilla[3]) 
+                self.ccx(self.__extra_ancilla[0], self.__extra_ancilla[2], self.__extra_ancilla[3]) 
+                self.ccx(self.__extra_ancilla[1], self.__extra_ancilla[2], self.__extra_ancilla[3]) 
+
+        extra_ancilla = 0   
+        for qubit in range(self.__num_data):
+            bit_list = transpose_parity[qubit]
+            qubit_data_item = qubit_data.get(qubit)
+            count = qubit_data_item.get("count")           
+            if count == 2:      
+                for bit_index in range(self.__num_ancilla): 
+                    first_bit = 0
+                    second_bit = 0   
+                    if count ==2:   # need a CCNOT gate
+                        for bit_index in range(self.__num_ancilla): 
+                            if bit_list[bit_index] == 1:
+                                if first_bit == 0:
+                                    first_bit = bit_index
+                                else:
+                                    second_bit = bit_index
+            ## need to add a ccx gate
+                self.ccx(self.__mz[first_bit], self.__mz[second_bit], self.__extra_ancilla[extra_ancilla])
+                extra_ancilla = extra_ancilla + 1
 
         self.barrier()  
 
