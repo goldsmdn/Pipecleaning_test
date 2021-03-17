@@ -11,12 +11,12 @@ def test_parity_validation():
     parity_check_matrix =  [[0,0,0,1,1,1,1],
                             [0,1,1,0,0,1,1],
                             [1,0,1,0,1,0,1]]
-    for text_X_qubit in range(6):
-        qubit = SteaneCodeLogicalQubit(0, parity_check_matrix)
-        qubit.set_up_logical_zero()
-        qubit.force_X_error(text_X_qubit)   #force X error for testing
-        qubit.set_up_ancilla()
-        qubit.decode()
+    for test_X_qubit in range(6):
+        qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, True)
+        qubit.set_up_logical_zero(0)
+        qubit.force_X_error(test_X_qubit,0)   #force X error for testing
+        qubit.set_up_ancilla(0)
+        qubit.decode(0)
         result = execute(qubit, SIMULATOR, shots=SHOTS).result()
         length = len(result.get_counts(qubit))
         assert length == 1
