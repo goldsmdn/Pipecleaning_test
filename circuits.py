@@ -229,18 +229,18 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for index in range(self.__num_ancilla):
             # need to swap measurement qubits so that the measurements match the normal format of the codewords
             if logical_qubit == 0:
-                self.measure(self.__mx_0[index],self.__mx_classical_0[self.__num_ancilla - index-1])
-                self.measure(self.__mz_0[index],self.__mz_classical_0[self.__num_ancilla - index-1])
+                self.measure(self.__mx_0[index], self.__mx_classical_0[self.__num_ancilla - index-1])
+                self.measure(self.__mz_0[index], self.__mz_classical_0[self.__num_ancilla - index-1])
             elif logical_qubit == 1:
-                self.measure(self.__mx_1[index],self.__mx_classical_1[self.__num_ancilla - index-1])
-                self.measure(self.__mz_1[index],self.__mz_classical_1[self.__num_ancilla - index-1])
+                self.measure(self.__mx_1[index], self.__mx_classical_1[self.__num_ancilla - index-1])
+                self.measure(self.__mz_1[index], self.__mz_classical_1[self.__num_ancilla - index-1])
             else:
                 raise ValueError("Unable to meaure qubits")
 
         if self.__correct_errors:
             for index in range(self.__num_extra_ancilla):
                 if logical_qubit == 0:
-                    self.measure(self.__extra_ancilla_0[index],self.__extra_ancilla_classical_0[self.__num_extra_ancilla - index- 1])
+                    self.measure(self.__extra_ancilla_0[index], self.__extra_ancilla_classical_0[self.__num_extra_ancilla - index- 1])
                 #elif logical_qubit == 1:
                     # should not be called at present - for future expansion
                     #self.measure(self.__extra_ancilla_1[index],self.__extra_ancilla_classical_1[self.__num_extra_ancilla - index- 1])
@@ -250,9 +250,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for index in range(self.__num_data):
             # need to swap measurement qubits so that the measurements match the normal format of the codewords
             if logical_qubit == 0:
-                self.measure(self.__data_0[index],self.__data_classical_0[self.__num_data - index-1])
+                self.measure(self.__data_0[index], self.__data_classical_0[self.__num_data - index-1])
             elif logical_qubit == 1:
-                self.measure(self.__data_1[index],self.__data_classical_1[self.__num_data - index-1])
+                self.measure(self.__data_1[index], self.__data_classical_1[self.__num_data - index-1])
             else:
                 raise ValueError("Unable to meaure qubits")
 
@@ -383,9 +383,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             if column_number != index:
                                 if parity_row[column_number] == 1:
                                         if logical_qubit == 0:
-                                            self.cx(self.__data_0[index],self.__data_0[column_number])
+                                            self.cx(self.__data_0[index], self.__data_0[column_number])
                                         elif logical_qubit == 1:
-                                            self.cx(self.__data_1[index],self.__data_1[column_number])
+                                            self.cx(self.__data_1[index], self.__data_1[column_number])
                                         else:
                                             raise ValueError("Unable to decode logical qubit")
 
@@ -456,9 +456,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             raise ValueError("the control and target qubits for the logical CX must be different")
         for index in range(self.__num_data):
             if logical_control_qubit == 0:
-                self.cx(self.__data_0[index],self.__data_1[index])
+                self.cx(self.__data_0[index], self.__data_1[index])
             elif logical_control_qubit == 1:
-                self.cx(self.__data_1[index],self.__data_0[index])
+                self.cx(self.__data_1[index], self.__data_0[index])
             else:
                 raise ValueError("Unable to apply CX gate")
     
@@ -474,11 +474,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             column = []
         return(parity_check_transpose)
 
-    def _validate_logical_qubit_number(self,q):
+    def _validate_logical_qubit_number(self, q):
         """Validates the logical qubit number.  Code might be enhanced in the future.
             Args:
                 q(int): Number of the logical "data" qubit to check
         """
-        if q not in [0,1]:
+        if q not in [0, 1]:
             raise ValueError("The qubit to be processed must be indexed as 0 or 1 at present")
 
