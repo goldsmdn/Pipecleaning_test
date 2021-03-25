@@ -103,11 +103,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     for parity_bit in parity_row:
                         if parity_bit not in [0,1]:
                             raise ValueError("Parity matrix entries must be 0 or 1")
-                        bit_store = bit_store^(bool(codeword_bit) ^ bool(parity_bit))
+                        bit_store = bit_store ^ (bool(codeword_bit) ^ bool(parity_bit))
                 if bit_store:
                     raise ValueError("Code word rows must be orthogonal to the parity matrix")
 
-    def set_up_logical_zero(self,logical_qubit):
+    def set_up_logical_zero(self, logical_qubit):
         """Set up logical zero for data qubit
          Args:
             logical_qubit(int): Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
