@@ -6,7 +6,7 @@ The initial test was to check the basic connectivity.
 The "Steane_code_old.ipynb" file is a more extensive test with the qubit codes keyed in.  
 It sets up two logical qubits in the Steane code and then entangles them with a logical Hadamard and a logical CX.
 
-The Steane_code.ipynb" file is the most recent version.  It uses the circuits.py code.  The Jupyter workbook calls methods in the SteaneCodeLogicalQubit python class:
+The Steane_code.ipynb" file is the most recent version.  It uses the circuits.py code.  The Jupyter workbook calls methods in the SteaneCodeLogicalQubit python class to:
  - validate the parity check matrix
  - initialise the qubits needed to build one or two logical qubits
  - set up a logical zero
@@ -21,4 +21,5 @@ The Steane_code.ipynb" file is the most recent version.  It uses the circuits.py
 
 An appropriate noise model is applied in both cases.
 
-An incomplete testing framework is in place and will be enhanced.  Documentation is not yet complete.
+An incomplete testing framework is in place and will be enhanced.  Documentation is not yet complete.  
+The _0 and _1 variables will be refactored during the project development.
